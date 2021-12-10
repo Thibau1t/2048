@@ -3,19 +3,19 @@
 #include <time.h>
 #define N 4 // taille de la grille 4*4 par deefault
 
-int ** initTab2D(int taille)
+int ** initTab2D()
 {
 	int ** tab = NULL;
-	tab = malloc(taille*sizeof(int *));
+	tab = malloc(N*sizeof(int *));
 	if(tab == NULL)
 	{
 		return NULL;
 	}
 
 	int i = 0; int j =0;
-	for(i=0; i<taille; i++)
+	for(i=0; i<N; i++)
 	{
-		tab[i] = (int *) calloc(taille,sizeof(int));
+		tab[i] = (int *) calloc(N,sizeof(int));
 		if(tab[i] == NULL)
 		{
 			for(j=0; j<i; j++)
@@ -28,13 +28,13 @@ int ** initTab2D(int taille)
 	return tab;
 }
 
-void afficheGrille(int ** tab, int taille)
+void afficheGrille(int ** tab)
 {
 	int i = 0 ; int j = 0;
 
-	for(i=0; i<taille; i++)
+	for(i=0; i<N; i++)
 	{
-		for(j=0; j<taille; j++)
+		for(j=0; j<N; j++)
 		{
 			printf("|%8d  ", tab[i][j]);
 		}
@@ -43,14 +43,14 @@ void afficheGrille(int ** tab, int taille)
 	printf("\n");
 }
 
-void remplieAleatoirement(int ** tab, int taille)
+void remplieAleatoirement(int ** tab)
 {
 	int i = 0; int j = 0; int reussi = 0; int val = 0;
 
 	while( !(reussi) )
 	{
-		i = rand()%taille;
-		j = rand()%taille;
+		i = rand()%N;
+		j = rand()%N;
 		if (tab[i][j] == 0)
 		{
 			val = rand()%2;
@@ -68,12 +68,12 @@ void remplieAleatoirement(int ** tab, int taille)
 	}
 }
 
-void copieGrille(int ** tabDep , int ** tabArr, int taille)
+void copieGrille(int ** tabDep , int ** tabArr)
 {
 	int i=0; int j =0;
-	for(i=0; i<taille; i++)
+	for(i=0; i<N; i++)
 	{
-		for(j=0; j<taille; j++)
+		for(j=0; j<N; j++)
 		{
 			tabArr[i][j] = tabDep[i][j];
 		}
@@ -81,15 +81,15 @@ void copieGrille(int ** tabDep , int ** tabArr, int taille)
 }
 
 
-void deplacementDroitCaseVide(int ** tab, int taille) //intermediare
+void deplacementDroitCaseVide(int ** tab) //intermediare
 {
 	int i =0; int j =0; int deplacement = 0;
 	while(!(deplacement))
 	{
 		deplacement = 1;
-		for(i=0; i<taille; i++)
+		for(i=0; i<N; i++)
 		{
-			for(j=0; j<taille-1; j++) // -1 car dernière colonne pas de deplacement à droite
+			for(j=0; j<N-1; j++) // -1 car dernière colonne pas de deplacement à droite
 			{
 				if(tab[i][j] != 0 && tab[i][j+1] == 0)
 				{
@@ -102,16 +102,16 @@ void deplacementDroitCaseVide(int ** tab, int taille) //intermediare
 	}
 }
 
-int deplacementDroit(int ** tab, int taille) // fonction finale de deplacement
+int deplacementDroit(int ** tab) // fonction finale de deplacement
 {
 	// gere les cases vides
-	deplacementDroitCaseVide(tab, taille);
+	deplacementDroitCaseVide(tab);
 
 	int i =0; int j =0; int score = 0;
 	// même case cote à cote
-	for(i=0; i<taille; i++)
+	for(i=0; i<N; i++)
 	{
-		for(j=taille-1; j>=0 ; j--)
+		for(j=N-1; j>=0 ; j--)
 		{
 			if(tab[i][j] == tab[i][j-1])
 			{
@@ -122,18 +122,18 @@ int deplacementDroit(int ** tab, int taille) // fonction finale de deplacement
 		}
 	}
 	//re-decalle les nouvelles cases vides
-	deplacementDroitCaseVide(tab, taille);
+	deplacementDroitCaseVide(tab);
 	return score;
 }
 
 
-int partieFinie(int ** tab, int taille) // retourn 1 si fini sinon 0
+int partieFinie(int ** tab) // retourn 1 si fini sinon 0
 {
 	int i = 0 ; int j = 0 ;
 
-	for(i=0; i<taille; i++)
+	for(i=0; i<N; i++)
 	{
-		for(j=0; j<taille; j++)
+		for(j=0; j<N; j++)
 		{
 			if(tab[i][j]==2048)
 			{
@@ -144,12 +144,12 @@ int partieFinie(int ** tab, int taille) // retourn 1 si fini sinon 0
 	return 0;
 }
 
-void freeTab2D(int ** tab , int taille)
+void freeTab2D(int ** tab)
 {
 	if (tab != NULL)
 	{
 		int i = 0;
-		for(i=0; i<taille; i++)
+		for(i=0; i<N; i++)
 		{
 			if(tab[i] != NULL)
 			{
@@ -161,22 +161,22 @@ void freeTab2D(int ** tab , int taille)
 	}
 }
 
-void rotaD(int ** tab, int taille) // rota de 90° vers la droite
+void rotaD(int ** tab) // rota de 90° vers la droite
 {
 	int ** sauv = NULL;
-	sauv = initTab2D(taille);
+	sauv = initTab2D();
 
 	if(sauv == NULL)
 	{
 		perror("Probleme rotation, le jeu peu planter suite à un probleme d'allocation mémoire (plus de place certainement) ... Veuillez relancez le jeu s'il vous plaît \n");
 	}
 
-	copieGrille(tab, sauv, taille);
+	copieGrille(tab, sauv);
 
 	int i = 0; int j = 0;
-	for (i = 0; i < taille; i++) 
+	for (i = 0; i < N; i++) 
 	{
-    	for (j = 0; j < taille; j++) 
+    	for (j = 0; j < N; j++) 
     	{
       		tab[i][j] = sauv[j][i];
     	}
@@ -184,17 +184,17 @@ void rotaD(int ** tab, int taille) // rota de 90° vers la droite
 
   	int sauvInt = 0;
 
-  	for (i = 0; i < taille; ++i) 
+  	for (i = 0; i < N; ++i) 
   	{
-    	for (j = 0; j < taille/2; ++j) 
+    	for (j = 0; j < N/2; ++j) 
     	{
     		sauvInt = tab[i][j];
-    		tab[i][j] = tab[i][taille-1-j];
-    		tab[i][taille-1-j] = sauvInt;
+    		tab[i][j] = tab[i][N-1-j];
+    		tab[i][N-1-j] = sauvInt;
 	  	}
   	}
 
-	freeTab2D(sauv, taille);
+	freeTab2D(sauv);
 }
 
 
@@ -203,7 +203,7 @@ int main(int argc, char ** argv)
 	srand(time(NULL));
 
 	int ** grilleJeu = NULL; int ** grilleJeuPrec = NULL;
-	grilleJeu = initTab2D(N); grilleJeuPrec = initTab2D(N);
+	grilleJeu = initTab2D(); grilleJeuPrec = initTab2D();
 	if (grilleJeu == NULL || grilleJeuPrec == NULL)
 	{
 		perror("Erreur de l'initialisation du tableau, pointeur == NULL");
@@ -222,18 +222,18 @@ int main(int argc, char ** argv)
 	grilleJeu[2][2] = 4;
 	grilleJeu[2][3] = 4;
 	int score = 0;
-	afficheGrille(grilleJeu, N);
-	score += deplacementDroit(grilleJeu, N);
-	afficheGrille(grilleJeu, N);
-	score += deplacementDroit(grilleJeu, N);
-	afficheGrille(grilleJeu, N);
+	afficheGrille(grilleJeu);
+	score += deplacementDroit(grilleJeu);
+	afficheGrille(grilleJeu);
+	score += deplacementDroit(grilleJeu);
+	afficheGrille(grilleJeu);
 	printf("Score = %d\n", score);
 
-	rotaD(grilleJeu , N);
-	afficheGrille(grilleJeu, N);
+	rotaD(grilleJeu );
+	afficheGrille(grilleJeu);
 
 
 
-	freeTab2D(grilleJeu, N); freeTab2D(grilleJeuPrec, N);
+	freeTab2D(grilleJeu); freeTab2D(grilleJeuPrec);
 	return EXIT_SUCCESS; 
 }
