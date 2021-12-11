@@ -254,21 +254,19 @@ int deplacementHaut(int ** tab)
 void menu()
 {
 	printf("Vous venez de lancer un 2048 de taille %d*%d. \n\n\n", N,N);
-	//sleep(3);
-	printf("Vous pouvez vous deplacer avec les touches : \n\t-'d' : pour se deplacer à droite, \n\t-'g' : pour se deplacer à gauche, \n\t-'h' : pour se deplacer en haut, \n\t-'b' : pour se deplacer en bas, \n\t-'r' : pour retourner une seule fois en arrière (non-cumulable).\n\n\n");
-	//sleep(5);
-
-
+	sleep(3);
+	printf("Vous pouvez vous deplacer avec les touches : \n\t-'d' : pour se deplacer à droite, \n\t-'g' : pour se deplacer à gauche, \n\t-'h' : pour se deplacer en haut, \n\t-'b' : pour se deplacer en bas, \n\t-'r' : pour revenir une seule fois en arrière (non-cumulable).\n\n\n");
+	sleep(5);
 
 	printf("Le score maximum est de %ld.\n\n\n",recupScoreMax());
-	//sleep(2);
+	sleep(2);
 	printf("La partie commence dans : \n");
 	printf("\t 3 sec. \n");
-	//sleep(1.5);
+	sleep(1.5);
 	printf("\t 2 sec. \n");
-	//sleep(1.5);
+	sleep(1.5);
 	printf("\t 1 sec. \n\n\n");
-	//sleep(1.5);
+	sleep(1.5);
 }
 
 void vider_buf()	 			// vider le buffer pour éviter le bug des scanf
@@ -414,4 +412,81 @@ int bloquer(int ** tab) // renvoie 1 si plus de coup possible
 
 	freeTab2D(sauv);
 	return 1;
+}
+
+
+
+int jeu(int ** grilleJeu, int ** grilleJeuPrec) //renvoi le score à la fin de la partie
+{
+	int continuer = 1; int coupTotal = 0; char lettre = ' '; unsigned long int score = 0; int coupJouer = 0;
+
+	int ** sauv = NULL;
+	sauv = initTab2D();
+	if(sauv == NULL)
+	{
+		perror("Probleme allocation mémoire, veuillez relancer le jeu, je ne garantie pas sons bon fonctionnement\n");
+		exit(EXIT_FAILURE);
+	}
+
+	while(continuer)
+	{
+
+		remplieAleatoirement(grilleJeu);
+		copieGrille(grilleJeu, sauv);
+		coupJouer = 0;
+		while(!coupJouer)
+		{
+			if(contient2048(grilleJeu) == 1)
+			{
+				printf("\n\nFélicitations vous avez gagné ᕦ( ⊡ 益 ⊡ )ᕤ\n\n");
+				goto stop;
+			}
+			if(coupTotal >= N*N)
+			{
+				if(bloquer(grilleJeu) == 1)
+				{
+					printf("\n\nVous avez perdu, peut-être une prochaine fois (｡ŏ﹏ŏ) \n\n");
+					goto stop;
+				}
+			}
+
+			afficheGrille(grilleJeu);
+			printf("Voici le coup numéro %d et le score actuel est %ld. \n\nVeuillez saisir votre déplacement ['d','g','h','b','r'] : ", coupTotal, score);
+			lettre = saisieLettre();
+
+			switch (lettre)
+			{
+				case 'd' : 
+					copieGrille(grilleJeu, grilleJeuPrec);
+					score += deplacementDroite(grilleJeu);
+					coupJouer = compareGrille(sauv, grilleJeu);
+					break;
+				case 'g' :
+					copieGrille(grilleJeu, grilleJeuPrec);
+					score += deplacementGauche(grilleJeu);
+					coupJouer = compareGrille(sauv, grilleJeu);
+					break;
+				case 'h' : 
+					copieGrille(grilleJeu, grilleJeuPrec);
+					score += deplacementHaut(grilleJeu);
+					coupJouer = compareGrille(sauv, grilleJeu);
+					break;
+				case 'b' :
+					copieGrille(grilleJeu, grilleJeuPrec);
+					score += deplacementBas(grilleJeu);
+					coupJouer = compareGrille(sauv, grilleJeu);
+					break;
+				case 'r' :
+					copieGrille(grilleJeuPrec, grilleJeu);
+					break;
+				default :
+					printf("Erreur de saisie (dans le switch)\n\n");
+					break;
+			}
+			
+		}
+		coupTotal++;
+	}
+	stop : freeTab2D(sauv);
+	return score;
 }

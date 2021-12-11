@@ -36,6 +36,7 @@ void menu();
 char saisieLettre();
 unsigned long int recupScoreMax();
 void ecritScore(unsigned long int );
+int jeu(int **, int ** );
 
 
 
